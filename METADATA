@@ -1,0 +1,17 @@
+name: "libwebm"
+description:
+    "libwebm is a library to read and write Matroska (MKV) and WebM files."
+
+third_party {
+  url {
+    type: HOMEPAGE
+    value: "https://chromium.googlesource.com/webm/libwebm"
+  }
+  url {
+    type: GIT
+    value: "https://chromium.googlesource.com/webm/libwebm"
+  }
+  version: "11cae244cc06c1295bffa9861c610dcde3b9da18"
+  last_upgrade_date { year: 2020 month: 10 day: 7 }
+  license_type: NOTICE
+}
