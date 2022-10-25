@@ -55,7 +55,7 @@ Type* SafeArrayAlloc(unsigned long long num_elements,
 void GetVersion(int& major, int& minor, int& build, int& revision) {
   major = 1;
   minor = 1;
-  build = 0;
+  build = 1;
   revision = 0;
 }
 
@@ -298,7 +298,7 @@ long UnserializeInt(IMkvReader* pReader, long long pos, long long size,
   if (status < 0)
     return status;
 
-  unsigned long long result = first_byte;
+  unsigned long long result = static_cast<unsigned long long>(first_byte);
   ++pos;
 
   for (long i = 1; i < size; ++i) {
