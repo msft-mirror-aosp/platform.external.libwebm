@@ -55,7 +55,7 @@ Type* SafeArrayAlloc(unsigned long long num_elements,
 void GetVersion(int& major, int& minor, int& build, int& revision) {
   major = 1;
   minor = 1;
-  build = 1;
+  build = 2;
   revision = 0;
 }
 
@@ -4569,7 +4569,8 @@ int Track::Info::CopyStr(char* Info::*str, Info& dst_) const {
   if (dst == NULL)
     return -1;
 
-  strcpy(dst, src);
+  memcpy(dst, src, len);
+  dst[len] = '\0';
 
   return 0;
 }
