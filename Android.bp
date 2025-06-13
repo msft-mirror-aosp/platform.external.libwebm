@@ -108,4 +108,5 @@ cc_library_static {
             enabled: false,
         },
     },
+    vendor_available: true,
 }
