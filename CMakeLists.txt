@@ -5,7 +5,7 @@
 #  tree. An additional intellectual property rights grant can be found
 #  in the file PATENTS.  All contributing project authors may
 #  be found in the AUTHORS file in the root of the source tree.
-cmake_minimum_required(VERSION 3.2)
+cmake_minimum_required(VERSION 3.16)
 project(LIBWEBM CXX)
 
 include(GNUInstallDirs)
@@ -97,7 +97,7 @@ set(mkvmuxer_sample_sources
     "${LIBWEBM_SRC_DIR}/sample_muxer_metadata.h")
 
 set(mkvmuxer_tests_sources
-    "${LIBWEBM_SRC_DIR}/testing/mkvmuxer_tests.cc"
+    "${LIBWEBM_SRC_DIR}/testing/mkvmuxer_test.cc"
     "${LIBWEBM_SRC_DIR}/testing/test_util.cc"
     "${LIBWEBM_SRC_DIR}/testing/test_util.h")
 
@@ -111,12 +111,12 @@ set(mkvparser_sources
 
 set(mkvparser_sample_sources "${LIBWEBM_SRC_DIR}/mkvparser_sample.cc")
 set(mkvparser_tests_sources
-    "${LIBWEBM_SRC_DIR}/testing/mkvparser_tests.cc"
+    "${LIBWEBM_SRC_DIR}/testing/mkvparser_test.cc"
     "${LIBWEBM_SRC_DIR}/testing/test_util.cc"
     "${LIBWEBM_SRC_DIR}/testing/test_util.h")
 
 set(vp9_header_parser_tests_sources
-    "${LIBWEBM_SRC_DIR}/common/vp9_header_parser_tests.cc"
+    "${LIBWEBM_SRC_DIR}/common/vp9_header_parser_test.cc"
     "${LIBWEBM_SRC_DIR}/common/vp9_header_parser.cc"
     "${LIBWEBM_SRC_DIR}/common/vp9_header_parser.h"
     "${LIBWEBM_SRC_DIR}/testing/test_util.cc"
@@ -125,7 +125,7 @@ set(vp9_header_parser_tests_sources
 set(vp9_level_stats_tests_sources
     "${LIBWEBM_SRC_DIR}/common/vp9_header_parser.cc"
     "${LIBWEBM_SRC_DIR}/common/vp9_header_parser.h"
-    "${LIBWEBM_SRC_DIR}/common/vp9_level_stats_tests.cc"
+    "${LIBWEBM_SRC_DIR}/common/vp9_level_stats_test.cc"
     "${LIBWEBM_SRC_DIR}/common/vp9_level_stats.cc"
     "${LIBWEBM_SRC_DIR}/common/vp9_level_stats.h"
     "${LIBWEBM_SRC_DIR}/testing/test_util.cc"
@@ -290,8 +290,7 @@ set(webm_parser_tests_sources
     "${LIBWEBM_SRC_DIR}/webm_parser/test_utils/limited_reader.cc"
     "${LIBWEBM_SRC_DIR}/webm_parser/test_utils/limited_reader.h"
     "${LIBWEBM_SRC_DIR}/webm_parser/test_utils/mock_callback.h"
-    "${LIBWEBM_SRC_DIR}/webm_parser/test_utils/parser_test.h"
-    "${LIBWEBM_SRC_DIR}/webm_parser/tests/webm_parser_tests.cc")
+    "${LIBWEBM_SRC_DIR}/webm_parser/test_utils/parser_test.h")
 
 set(webm_info_sources
     "${LIBWEBM_SRC_DIR}/common/indent.cc"
@@ -321,8 +320,8 @@ set(webm2pes_sources "${LIBWEBM_SRC_DIR}/m2ts/webm2pes_main.cc")
 set(webm2pes_tests_sources
     "${LIBWEBM_SRC_DIR}/testing/test_util.cc"
     "${LIBWEBM_SRC_DIR}/testing/test_util.h"
-    "${LIBWEBM_SRC_DIR}/testing/video_frame_tests.cc"
-    "${LIBWEBM_SRC_DIR}/m2ts/tests/webm2pes_tests.cc")
+    "${LIBWEBM_SRC_DIR}/testing/video_frame_test.cc"
+    "${LIBWEBM_SRC_DIR}/m2ts/tests/webm2pes_test.cc")
 set(webm2ts_sources "${LIBWEBM_SRC_DIR}/m2ts/vpxpes2ts_main.cc")
 
 set(webvtt_common_headers "${LIBWEBM_SRC_DIR}/webvtt/vttreader.h"
@@ -390,6 +389,9 @@ if(ENABLE_TESTS)
 
   if(LIBWEBM_DISABLE_GTEST_CMAKE)
     add_library(gtest STATIC "${GTEST_SRC_DIR}/googletest/src/gtest-all.cc")
+    add_library(gtest_main STATIC
+                "${GTEST_SRC_DIR}/googletest/src/gtest_main.cc")
+    target_link_libraries(gtest_main PUBLIC gtest)
     include_directories("${GTEST_SRC_DIR}/googletest")
   else()
     add_subdirectory("${GTEST_SRC_DIR}" "${GTEST_BUILD_DIR}")
@@ -397,27 +399,27 @@ if(ENABLE_TESTS)
   include_directories("${GTEST_SRC_DIR}/googletest/include")
 
   add_executable(mkvmuxer_tests ${mkvmuxer_tests_sources})
-  target_link_libraries(mkvmuxer_tests LINK_PUBLIC gtest webm)
+  target_link_libraries(mkvmuxer_tests LINK_PUBLIC gtest_main webm)
 
   add_executable(mkvparser_tests ${mkvparser_tests_sources})
-  target_link_libraries(mkvparser_tests LINK_PUBLIC gtest webm)
+  target_link_libraries(mkvparser_tests LINK_PUBLIC gtest_main webm)
 
   add_executable(vp9_header_parser_tests ${vp9_header_parser_tests_sources})
-  target_link_libraries(vp9_header_parser_tests LINK_PUBLIC gtest webm)
+  target_link_libraries(vp9_header_parser_tests LINK_PUBLIC gtest_main webm)
 
   add_executable(vp9_level_stats_tests ${vp9_level_stats_tests_sources})
-  target_link_libraries(vp9_level_stats_tests LINK_PUBLIC gtest webm)
+  target_link_libraries(vp9_level_stats_tests LINK_PUBLIC gtest_main webm)
 
   if(ENABLE_WEBMTS)
     add_executable(webm2pes_tests ${webm2pes_tests_sources}
                                   $<TARGET_OBJECTS:webmts>)
-    target_link_libraries(webm2pes_tests LINK_PUBLIC gtest webm)
+    target_link_libraries(webm2pes_tests LINK_PUBLIC gtest_main webm)
   endif()
 
   if(ENABLE_WEBM_PARSER)
     include_directories("${GTEST_SRC_DIR}/googlemock/include")
     add_executable(webm_parser_tests ${webm_parser_tests_sources})
-    target_link_libraries(webm_parser_tests LINK_PUBLIC gmock gtest webm)
+    target_link_libraries(webm_parser_tests LINK_PUBLIC gmock gtest_main webm)
   endif()
 endif()
 
